@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Mime\Part\Multipart;
 
+use ReflectionProperty;
 use Symfony\Component\Mime\Exception\InvalidArgumentException;
 use Symfony\Component\Mime\Part\AbstractMultipartPart;
 use Symfony\Component\Mime\Part\DataPart;
@@ -48,9 +49,17 @@ final class FormDataPart extends AbstractMultipartPart
         return 'form-data';
     }
 
-    public function getParts(): array
+    public function getParts(string $encoding = null): array
     {
-        return $this->prepareFields($this->fields);
+        $parts = $this->prepareFields($this->fields);
+        foreach ($parts as &$part) {
+            if ($part instanceof DataPart && null === $encoding) {
+                continue;
+            }
+            $part = clone $part;
+            $this->configureTextPartEncoding($part, $encoding ?? '8bit');
+        }
+        return $parts;
     }
 
     private function prepareFields(array $fields): array
@@ -100,10 +109,11 @@ final class FormDataPart extends AbstractMultipartPart
         $part->getHeaders()->setMaxLineLength(\PHP_INT_MAX);
         if ($part instanceof DataPart) {
             // data part may specify base64 encoding
-            $this->configureDataPartEncoding($part);
-        } else {
-            $this->configureTextPartEncoding($part);
-        }
+            #$part = clone $part;
+            #$this->configureDataPartEncoding($part);
+        }# else {
+            #$this->configureTextPartEncoding($part);
+        #}
 
         return $part;
     }

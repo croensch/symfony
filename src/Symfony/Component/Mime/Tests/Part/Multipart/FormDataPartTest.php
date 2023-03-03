@@ -44,7 +44,7 @@ class FormDataPartTest extends TestCase
         $c->setName('baz');
         $c->getHeaders()->setMaxLineLength(\PHP_INT_MAX);
         $r->setValue($c, '8bit');
-        $this->assertEquals([$t, $b, $c], $f->getParts());
+        $this->assertEquals([$t, $b, $c], $f->getParts('8bit'));
     }
 
     public function testConstructorWithBase64Encoding()
@@ -213,7 +213,7 @@ class FormDataPartTest extends TestCase
             'foo' => new DataPart($foo = str_repeat('foo', 1000), 'foo.txt', 'text/plain'),
             'bar' => $bar = str_repeat('bar', 1000),
         ]);
-        $parts = $f->getParts();
+        $parts = $f->getParts('8bit');
         $this->assertEquals($foo, $parts[0]->bodyToString());
         $this->assertEquals($bar, $parts[1]->bodyToString());
     }

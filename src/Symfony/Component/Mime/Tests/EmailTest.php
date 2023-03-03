@@ -530,7 +530,6 @@ class EmailTest extends TestCase
         {
             "filename": "test.txt",
             "mediaType": "application",
-            "formEncoding": "8bit",
             "body": "Some Text file",
             "charset": null,
             "subtype": "octet-stream",

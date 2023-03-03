@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Mime\Part;
 
+use ReflectionProperty;
 use Symfony\Component\Mime\Exception\InvalidArgumentException;
 use Symfony\Component\Mime\Header\Headers;
 
@@ -26,9 +27,6 @@ class DataPart extends TextPart
     private $mediaType;
     private $cid;
 
-    /** @internal */
-    private $formEncoding;
-
     /**
      * @param resource|string|File $body Use a File instance to defer loading the file until rendering
      */
@@ -43,9 +41,7 @@ class DataPart extends TextPart
         $contentType ??= $body instanceof File ? $body->getContentType() : 'application/octet-stream';
         [$this->mediaType, $subtype] = explode('/', $contentType);
 
-        parent::__construct($body, null, $subtype, $encoding);
-
-        $this->formEncoding = $encoding ?? '8bit';
+        parent::__construct($body, null, $subtype, $encoding ?? 'base64');
 
         if (null !== $filename) {
             $this->filename = $filename;
